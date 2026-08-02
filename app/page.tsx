@@ -82,8 +82,16 @@ export default function Home() {
                 disabled={!missionName.trim()}
                 className="w-full mt-2 bg-white text-neutral-950 font-semibold py-3 px-4 rounded-xl text-sm hover:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Launch Mission
+                Assemble Crew
               </button>
+
+              {/* Subtle Roster Indicator */}
+              <div className="pt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs text-neutral-500 border-t border-neutral-800/40">
+                <span>Crew standing by: Architect, Builder, Critic, Researcher, Designer</span>
+                <span className="text-emerald-400 flex items-center gap-1.5 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Status: Ready
+                </span>
+              </div>
             </div>
           </div>
         )}
@@ -165,8 +173,9 @@ export default function Home() {
       </div>
 
       {/* Footer copyright */}
-      <footer className="max-w-4xl w-full mx-auto text-center text-xs text-neutral-600 border-t border-neutral-900/60 pt-4">
-        AIrGun OS &bull; Built for Autonomous Founder Execution
+      <footer className="max-w-4xl w-full mx-auto text-center text-xs text-neutral-500 border-t border-neutral-900/60 pt-4 space-y-1">
+        <p>AIrGun OS &bull; Built for Autonomous Founder Execution</p>
+        <p className="text-neutral-600 text-[11px]">Conceived by Ragz. Built with Giz & Maya.</p>
       </footer>
 
     </main>
