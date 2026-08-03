@@ -125,7 +125,7 @@ export default function Home() {
     }
   };
 
-  const handleAddGuest = (e: React.FormEvent) => {
+  const handleAddGuest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestNameInput.trim()) return;
 
@@ -134,6 +134,28 @@ export default function Home() {
       email: guestEmailInput || 'no-email@provided.com',
       specialty: guestSpecialtyInput || 'Human Advisor'
     };
+
+    // Trigger backend email API route
+    try {
+      const response = await fetch('/api/invite-guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newGuest.name,
+          email: newGuest.email,
+          specialty: newGuest.specialty,
+          missionName: missionName || 'Mission',
+          objective: objective || 'Autonomous execution'
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        console.error("Email dispatch failed:", result.error);
+      }
+    } catch (err) {
+      console.error("Network error sending email:", err);
+    }
 
     setGuest(newGuest);
     addTimelineEvent(`Human Guest Invited: ${newGuest.name} (${newGuest.specialty})`);
@@ -470,7 +492,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* STEP 4: MISSION ROOM WORKSPACE WITH PERSISTENT CHAT STREAM, MISSION VAULT & GUEST CONTROLS */}
+        {/* STEP 4: MISSION ROOM WORKSPACE WITH PERSISTENT STREAM, MISSION VAULT & GUEST CONTROLS */}
         {step === 'room' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
@@ -483,7 +505,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              {/* Left Column: Continuous Chat Stream & Input with Clean Grey Frame */}
+              {/* Left Column: Continuous Chat Stream & Input */}
               <div className="md:col-span-2 bg-black border border-neutral-800/80 rounded-2xl p-6 space-y-6 flex flex-col justify-between shadow-xl">
                 
                 <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
@@ -537,10 +559,10 @@ export default function Home() {
                 </form>
               </div>
 
-              {/* Right Column: Crew, Mission Vault, and Flight Recorder (1 Column Wide) */}
+              {/* Right Column: Crew, Mission Vault, and Flight Recorder */}
               <div className="space-y-4">
                 
-                {/* Active Council & Crew Panel with Guest Invite/Kick */}
+                {/* Active Council & Crew Panel with Guest Controls */}
                 <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400">Crew in Room</h3>
@@ -659,7 +681,7 @@ export default function Home() {
               <button onClick={() => setShowGuestModal(false)} className="text-neutral-400 hover:text-white text-sm">✕</button>
             </div>
             <p className="text-xs text-neutral-400">
-              Bring a human specialist into Room B for project <strong className="text-white">{missionName}</strong>. They will stay in this room until the council agrees to remove them.
+              Bring a human specialist into Room B for project <strong className="text-white">{missionName}</strong>. They will receive an email invite and stay in this room until removed.
             </p>
             <form onSubmit={handleAddGuest} className="space-y-4">
               <div className="space-y-1">
@@ -681,6 +703,7 @@ export default function Home() {
                   value={guestEmailInput}
                   onChange={(e) => setGuestEmailInput(e.target.value)}
                   className="w-full bg-black border border-neutral-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-600"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -705,7 +728,7 @@ export default function Home() {
                   type="submit"
                   className="flex-1 bg-white hover:bg-neutral-200 text-black font-semibold py-2.5 rounded-xl text-xs transition-colors"
                 >
-                  Bring Into Room B
+                  Send Invite & Enter Room B
                 </button>
               </div>
             </form>
