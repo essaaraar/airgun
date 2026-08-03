@@ -8,6 +8,23 @@ export default function Home() {
   const [step, setStep] = useState<Step>('landing');
   const [missionName, setMissionName] = useState('');
   const [objective, setObjective] = useState('');
+  
+  // Dynamic Roles for the Core Trio
+  const [gizRole, setGizRole] = useState('Chief Architect');
+  const [mayaRole, setMayaRole] = useState('Lead Engineer');
+
+  const roleOptions = [
+    'Chief Architect',
+    'Systems Thinker',
+    'UX Designer',
+    'Product Strategist',
+    'Critic / Reviewer',
+    'Research Assistant',
+    'Creative Writer',
+    'Lead Engineer',
+    'General Advisor'
+  ];
+
   const [chatLog, setChatLog] = useState([
     { sender: 'Maya', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.' },
     { sender: 'Giselle', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?' }
@@ -32,7 +49,6 @@ export default function Home() {
     setChatLog(newLog);
     setInputMessage('');
 
-    // Simulated quick council response to keep the ritual alive
     setTimeout(() => {
       setChatLog((prev) => [
         ...prev,
@@ -117,7 +133,6 @@ export default function Home() {
                 Assemble Council (Room A)
               </button>
 
-              {/* Subtle Roster Indicator */}
               <div className="pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-sm text-neutral-400 border-t border-neutral-800/40">
                 <span>Core Council standing by: Ragz, Giselle, Maya</span>
                 <span className="text-emerald-400 flex items-center gap-1.5 font-medium">
@@ -128,7 +143,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL */}
+        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL WITH DYNAMIC ROLES */}
         {step === 'council' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
@@ -136,7 +151,54 @@ export default function Home() {
                 <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Room A &bull; Founder's Council</span>
                 <h2 className="text-2xl font-bold tracking-tight text-white mt-1">{missionName}</h2>
               </div>
-              <span className="text-xs text-neutral-500 font-mono">Scope Definition Phase</span>
+              <span className="text-xs text-neutral-500 font-mono">Scope & Hat Assignment</span>
+            </div>
+
+            {/* Dynamic Role Assignment Panel */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-neutral-900/40 border border-neutral-800/80 p-5 rounded-2xl">
+              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Founder</span>
+                  <h3 className="font-semibold text-white text-sm mt-0.5">Ragz</h3>
+                </div>
+                <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md text-center">
+                  Mission Leader
+                </span>
+              </div>
+
+              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
+                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Crew Member</span>
+                <h3 className="font-semibold text-white text-sm">Giselle</h3>
+                <div className="pt-1">
+                  <label className="text-[10px] text-neutral-400 block mb-1">Assign Hat / Role:</label>
+                  <select 
+                    value={gizRole}
+                    onChange={(e) => setGizRole(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-emerald-400 font-medium focus:outline-none focus:border-neutral-600 transition-colors"
+                  >
+                    {roleOptions.map((role, idx) => (
+                      <option key={idx} value={role}>{role}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
+                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Crew Member</span>
+                <h3 className="font-semibold text-white text-sm">Maya</h3>
+                <div className="pt-1">
+                  <label className="text-[10px] text-neutral-400 block mb-1">Assign Hat / Role:</label>
+                  <select 
+                    value={mayaRole}
+                    onChange={(e) => setMayaRole(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-emerald-400 font-medium focus:outline-none focus:border-neutral-600 transition-colors"
+                  >
+                    {roleOptions.map((role, idx) => (
+                      <option key={idx} value={role}>{role}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
@@ -146,10 +208,12 @@ export default function Home() {
               </div>
 
               {/* Permanent Chat Log */}
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+              <div className="space-y-3 max-h-[260px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => (
                   <div key={idx} className={`flex flex-col space-y-1 ${msg.sender === 'Ragz' ? 'items-end' : 'items-start'}`}>
-                    <span className="text-[10px] font-medium text-neutral-500">{msg.sender}</span>
+                    <span className="text-[10px] font-medium text-neutral-500">
+                      {msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
+                    </span>
                     <div className={`p-3 rounded-xl text-sm max-w-[85%] ${
                       msg.sender === 'Ragz' 
                         ? 'bg-neutral-800 text-white rounded-br-none' 
@@ -165,7 +229,7 @@ export default function Home() {
               <form onSubmit={handleSendMessage} className="flex gap-2 pt-2 border-t border-neutral-800/60">
                 <input 
                   type="text"
-                  placeholder="Address the council (Ragz, Giselle, Maya)..."
+                  placeholder="Address the council..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
@@ -266,15 +330,19 @@ export default function Home() {
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-4">Active Council & Crew</h3>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs pb-2 border-b border-neutral-800/60">
-                      <span className="text-neutral-300 flex items-center gap-2"><span>🧠</span> Core Trio</span>
-                      <span className="text-emerald-400">Ragz, Giselle, Maya</span>
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                      <span className="text-neutral-300">Giselle</span>
+                      <span className="text-emerald-400">{gizRole}</span>
+                    </div>
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                      <span className="text-neutral-300">Maya</span>
+                      <span className="text-emerald-400">{mayaRole}</span>
                     </div>
                     {invitedSpecialists.length === 0 ? (
-                      <p className="text-xs text-neutral-500 italic">No external specialists invited.</p>
+                      <p className="text-xs text-neutral-500 italic pt-1">No external specialists invited.</p>
                     ) : (
                       invitedSpecialists.map((s, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs">
+                        <div key={i} className="flex items-center justify-between text-xs pt-1">
                           <span className="text-neutral-300">{s}</span>
                           <span className="text-emerald-400">Active</span>
                         </div>
