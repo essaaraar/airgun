@@ -4,6 +4,13 @@ import { useState } from 'react';
 
 type Step = 'landing' | 'council' | 'invite' | 'room';
 
+interface ChatMessage {
+  sender: string;
+  roleTag: string;
+  text: string;
+  timestamp: string;
+}
+
 export default function Home() {
   const [step, setStep] = useState<Step>('landing');
   const [missionName, setMissionName] = useState('');
@@ -25,9 +32,14 @@ export default function Home() {
     'General Advisor'
   ];
 
-  const [chatLog, setChatLog] = useState([
-    { sender: 'Maya', roleTag: 'Lead Engineer', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.' },
-    { sender: 'Giselle', roleTag: 'Chief Architect', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?' }
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  };
+
+  const [chatLog, setChatLog] = useState<ChatMessage[]>([
+    { sender: 'Maya', roleTag: 'Lead Engineer', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.', timestamp: '12:00:01' },
+    { sender: 'Giselle', roleTag: 'Chief Architect', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?', timestamp: '12:00:04' }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   
@@ -45,14 +57,14 @@ export default function Home() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    const newLog = [...chatLog, { sender: 'Ragz', roleTag: 'The Known Stranger', text: inputMessage }];
+    const newLog = [...chatLog, { sender: 'Ragz', roleTag: 'The Known Stranger', text: inputMessage, timestamp: getCurrentTime() }];
     setChatLog(newLog);
     setInputMessage('');
 
     setTimeout(() => {
       setChatLog((prev) => [
         ...prev,
-        { sender: 'Maya', roleTag: mayaRole, text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.` }
+        { sender: 'Maya', roleTag: mayaRole, text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.`, timestamp: getCurrentTime() }
       ]);
     }, 800);
   };
@@ -210,26 +222,31 @@ export default function Home() {
 
             </div>
 
-            {/* Clean Unified Stream Chat Feed */}
+            {/* Clean Unified Stream Chat Feed with Timestamps */}
             <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
               
               {/* Mission Objective subtle badge */}
               <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
                 <span>Objective: <strong className="text-white">{objective}</strong></span>
-                <span className="text-neutral-600 font-mono">Encrypted Feed</span>
+                <span className="text-neutral-600 font-mono">Encrypted Feed &bull; Execution Monitoring</span>
               </div>
 
-              {/* Continuous Left-Aligned Message Stream (For Everyone) */}
+              {/* Continuous Left-Aligned Message Stream with Timestamps */}
               <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => {
                   const isUser = msg.sender === 'Ragz';
                   return (
                     <div key={idx} className="flex flex-col items-start w-full">
-                      <div className="flex items-center gap-1.5 mb-1 px-1">
-                        <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
-                          {msg.sender}
+                      <div className="flex items-center justify-between w-full mb-1 px-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
+                            {msg.sender}
+                          </span>
+                          <span className="text-[10px] text-neutral-500">({msg.roleTag})</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-neutral-600 bg-neutral-950 px-2 py-0.5 rounded border border-neutral-900">
+                          {msg.timestamp}
                         </span>
-                        <span className="text-[10px] text-neutral-500">({msg.roleTag})</span>
                       </div>
                       <div className="text-sm text-neutral-300 text-left pl-1 leading-relaxed w-full">
                         {msg.text}
