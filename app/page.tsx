@@ -210,7 +210,7 @@ export default function Home() {
 
             </div>
 
-            {/* Clean WhatsApp/Instagram Style Chat Feed */}
+            {/* Clean Unified Stream Chat Feed */}
             <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
               
               {/* Mission Objective subtle badge */}
@@ -219,21 +219,19 @@ export default function Home() {
                 <span className="text-neutral-600 font-mono">Encrypted Feed</span>
               </div>
 
-              {/* Continuous Message Stream */}
-              <div className="space-y-4 max-h-[340px] overflow-y-auto pr-2">
+              {/* Continuous Left-Aligned Message Stream (For Everyone) */}
+              <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => {
-                  const isMe = msg.sender === 'Ragz';
+                  const isUser = msg.sender === 'Ragz';
                   return (
-                    <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                    <div key={idx} className="flex flex-col items-start w-full">
                       <div className="flex items-center gap-1.5 mb-1 px-1">
-                        <span className="text-xs font-semibold text-white">{msg.sender}</span>
+                        <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
+                          {msg.sender}
+                        </span>
                         <span className="text-[10px] text-neutral-500">({msg.roleTag})</span>
                       </div>
-                      <div className={`text-sm max-w-[85%] leading-relaxed ${
-                        isMe 
-                          ? 'text-white text-right' 
-                          : 'text-neutral-300 text-left'
-                      }`}>
+                      <div className="text-sm text-neutral-300 text-left pl-1 leading-relaxed w-full">
                         {msg.text}
                       </div>
                     </div>
