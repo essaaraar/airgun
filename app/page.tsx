@@ -1,4 +1,4 @@
-=='use client';
+'use client';
 
 import { useState } from 'react';
 
@@ -183,13 +183,17 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-neutral-100 flex flex-col justify-between p-8 font-sans selection:bg-neutral-800">
       
-      {/* Global Custom Scrollbar Styles to Eliminate White Track */}
+      {/* Hardened Zero-White-Background Scrollbar Overrides */}
       <style jsx global>{`
         ::-webkit-scrollbar {
           width: 6px;
           height: 6px;
+          background: #000000;
         }
         ::-webkit-scrollbar-track {
+          background: #000000;
+        }
+        ::-webkit-scrollbar-corner {
           background: #000000;
         }
         ::-webkit-scrollbar-thumb {
