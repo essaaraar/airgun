@@ -222,16 +222,16 @@ export default function Home() {
 
             </div>
 
-            {/* Clean Unified Stream Chat Feed with Timestamps */}
+            {/* Clean Unified Stream Chat Feed with Visible Timestamps */}
             <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
               
               {/* Mission Objective subtle badge */}
               <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
                 <span>Objective: <strong className="text-white">{objective}</strong></span>
-                <span className="text-neutral-600 font-mono">Encrypted Feed &bull; Execution Monitoring</span>
+                <span className="text-neutral-500 font-mono">Execution Feed</span>
               </div>
 
-              {/* Continuous Left-Aligned Message Stream with Timestamps */}
+              {/* Continuous Left-Aligned Message Stream */}
               <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => {
                   const isUser = msg.sender === 'Ragz';
@@ -242,10 +242,11 @@ export default function Home() {
                           <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
                             {msg.sender}
                           </span>
-                          <span className="text-[10px] text-neutral-500">({msg.roleTag})</span>
+                          <span className="text-[10px] text-neutral-400">({msg.roleTag})</span>
                         </div>
-                        <span className="text-[10px] font-mono text-neutral-600 bg-neutral-950 px-2 py-0.5 rounded border border-neutral-900">
-                          {msg.timestamp}
+                        {/* High-contrast Timestamp Badge */}
+                        <span className="text-[11px] font-mono text-neutral-300 bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded-md">
+                          ⏱ {msg.timestamp}
                         </span>
                       </div>
                       <div className="text-sm text-neutral-300 text-left pl-1 leading-relaxed w-full">
