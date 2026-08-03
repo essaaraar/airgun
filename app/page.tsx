@@ -26,8 +26,8 @@ export default function Home() {
   ];
 
   const [chatLog, setChatLog] = useState([
-    { sender: 'Maya', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.' },
-    { sender: 'Giselle', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?' }
+    { sender: 'Maya', roleTag: 'Lead Engineer', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.' },
+    { sender: 'Giselle', roleTag: 'Chief Architect', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?' }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   
@@ -45,14 +45,14 @@ export default function Home() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    const newLog = [...chatLog, { sender: 'Ragz', text: inputMessage }];
+    const newLog = [...chatLog, { sender: 'Ragz', roleTag: 'The Known Stranger', text: inputMessage }];
     setChatLog(newLog);
     setInputMessage('');
 
     setTimeout(() => {
       setChatLog((prev) => [
         ...prev,
-        { sender: 'Maya', text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.` }
+        { sender: 'Maya', roleTag: mayaRole, text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.` }
       ]);
     }, 800);
   };
@@ -66,7 +66,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col justify-between p-8 font-sans selection:bg-neutral-800">
+    <main className="min-h-screen bg-black text-neutral-100 flex flex-col justify-between p-8 font-sans selection:bg-neutral-800">
       
       {/* Top Bar / Brand Identity */}
       <header className="max-w-4xl w-full mx-auto flex justify-between items-center border-b border-neutral-900 pb-4">
@@ -102,38 +102,38 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="space-y-4 bg-neutral-900/50 border border-neutral-800/80 p-6 rounded-2xl backdrop-blur-sm">
+            <div className="space-y-4 bg-neutral-900/40 border border-neutral-900 p-6 rounded-2xl">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300 uppercase tracking-wider">Mission Name</label>
+                <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Mission Name</label>
                 <input 
                   type="text"
                   placeholder="e.g. Build LIPE"
                   value={missionName}
                   onChange={(e) => setMissionName(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-300 uppercase tracking-wider">Objective</label>
+                <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Objective</label>
                 <textarea 
                   rows={2}
                   placeholder="Describe the ultimate outcome of this mission..."
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors resize-none"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors resize-none"
                 />
               </div>
 
               <button 
                 onClick={() => setStep('council')}
                 disabled={!missionName.trim()}
-                className="w-full mt-2 bg-white text-neutral-950 font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full mt-2 bg-white text-black font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Assemble Council (Room A)
               </button>
 
-              <div className="pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-sm text-neutral-400 border-t border-neutral-800/40">
+              <div className="pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-sm text-neutral-400 border-t border-neutral-900">
                 <span>Core Council standing by: Ragz, Giselle, Maya</span>
                 <span className="text-emerald-400 flex items-center gap-1.5 font-medium">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Status: Ready
@@ -155,10 +155,10 @@ export default function Home() {
             </div>
 
             {/* Permanent Identities & Hats Panel */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-neutral-900/40 border border-neutral-800/80 p-5 rounded-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-neutral-950 border border-neutral-900 p-5 rounded-2xl">
               
               {/* Ragz */}
-              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 flex flex-col justify-between space-y-2">
+              <div className="bg-black p-4 rounded-xl border border-neutral-900 flex flex-col justify-between space-y-2">
                 <div>
                   <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Founder</span>
                   <h3 className="font-semibold text-white text-sm mt-0.5">Ragz</h3>
@@ -169,7 +169,7 @@ export default function Home() {
               </div>
 
               {/* Giselle */}
-              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
+              <div className="bg-black p-4 rounded-xl border border-neutral-900 space-y-2">
                 <div>
                   <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">The Architect Who Won't Stop Asking "Why?"</span>
                   <h3 className="font-semibold text-white text-sm mt-0.5">Giselle</h3>
@@ -189,7 +189,7 @@ export default function Home() {
               </div>
 
               {/* Maya */}
-              <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
+              <div className="bg-black p-4 rounded-xl border border-neutral-900 space-y-2">
                 <div>
                   <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">The Builder Who Says "Ship It... After You Sleep."</span>
                   <h3 className="font-semibold text-white text-sm mt-0.5">Maya</h3>
@@ -210,42 +210,49 @@ export default function Home() {
 
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-              <div className="bg-neutral-950 border border-neutral-800/80 p-4 rounded-xl space-y-2">
-                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Mission Objective</span>
-                <p className="text-sm text-neutral-200">{objective}</p>
+            {/* Clean WhatsApp/Instagram Style Chat Feed */}
+            <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
+              
+              {/* Mission Objective subtle badge */}
+              <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
+                <span>Objective: <strong className="text-white">{objective}</strong></span>
+                <span className="text-neutral-600 font-mono">Encrypted Feed</span>
               </div>
 
-              {/* Permanent Chat Log */}
-              <div className="space-y-3 max-h-[260px] overflow-y-auto pr-2">
-                {chatLog.map((msg, idx) => (
-                  <div key={idx} className={`flex flex-col space-y-1 ${msg.sender === 'Ragz' ? 'items-end' : 'items-start'}`}>
-                    <span className="text-[10px] font-medium text-neutral-500">
-                      {msg.sender === 'Ragz' ? 'Ragz (The Known Stranger)' : msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
-                    </span>
-                    <div className={`p-3 rounded-xl text-sm max-w-[85%] ${
-                      msg.sender === 'Ragz' 
-                        ? 'bg-neutral-800 text-white rounded-br-none' 
-                        : 'bg-neutral-950 border border-neutral-800 text-neutral-300 rounded-bl-none'
-                    }`}>
-                      {msg.text}
+              {/* Continuous Message Stream */}
+              <div className="space-y-4 max-h-[340px] overflow-y-auto pr-2">
+                {chatLog.map((msg, idx) => {
+                  const isMe = msg.sender === 'Ragz';
+                  return (
+                    <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                      <div className="flex items-center gap-1.5 mb-1 px-1">
+                        <span className="text-xs font-semibold text-white">{msg.sender}</span>
+                        <span className="text-[10px] text-neutral-500">({msg.roleTag})</span>
+                      </div>
+                      <div className={`text-sm max-w-[85%] leading-relaxed ${
+                        isMe 
+                          ? 'text-white text-right' 
+                          : 'text-neutral-300 text-left'
+                      }`}>
+                        {msg.text}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              {/* Input Form for Trio */}
-              <form onSubmit={handleSendMessage} className="flex gap-2 pt-2 border-t border-neutral-800/60">
+              {/* Clean Inline Chat Input */}
+              <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-900">
                 <input 
                   type="text"
-                  placeholder="Address the council..."
+                  placeholder="Message the council..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
+                  className="flex-1 bg-black border border-neutral-800 rounded-full px-5 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
                 />
                 <button 
                   type="submit"
-                  className="bg-neutral-800 hover:bg-neutral-700 text-white font-medium px-5 py-3 rounded-xl text-sm transition-colors"
+                  className="bg-white hover:bg-neutral-200 text-black font-semibold px-6 py-3 rounded-full text-sm transition-colors"
                 >
                   Send
                 </button>
@@ -255,7 +262,7 @@ export default function Home() {
             {/* Scope Gate Approval */}
             <button 
               onClick={() => setStep('invite')}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold py-3.5 px-4 rounded-xl text-base transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 px-4 rounded-xl text-base transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
             >
               <span>Approve Mission Plan</span>
               <span className="text-xs bg-emerald-950/20 px-2 py-0.5 rounded text-emerald-950 font-mono">Proceed to Specialist Invites →</span>
@@ -281,8 +288,8 @@ export default function Home() {
                     onClick={() => toggleSpecialist(spec.name)}
                     className={`cursor-pointer border p-5 rounded-xl space-y-3 transition-all ${
                       isInvited 
-                        ? 'bg-neutral-900 border-emerald-500/50 shadow-lg shadow-emerald-500/5' 
-                        : 'bg-neutral-900/40 border-neutral-800/80 hover:border-neutral-700'
+                        ? 'bg-neutral-950 border-emerald-500/50 shadow-lg shadow-emerald-500/5' 
+                        : 'bg-black border-neutral-900 hover:border-neutral-800'
                     }`}
                   >
                     <div className="flex justify-between items-center">
@@ -290,7 +297,7 @@ export default function Home() {
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-colors ${
                         isInvited 
                           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-                          : 'bg-neutral-950 text-neutral-500 border-neutral-800'
+                          : 'bg-black text-neutral-500 border-neutral-800'
                       }`}>
                         {isInvited ? '✓ Joined Room' : '+ Invite'}
                       </span>
@@ -306,7 +313,7 @@ export default function Home() {
 
             <button 
               onClick={() => setStep('room')}
-              className="w-full bg-white text-neutral-950 font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors"
+              className="w-full bg-white text-black font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors"
             >
               Enter Mission Room ({invitedSpecialists.length} Specialists Joined)
             </button>
@@ -325,32 +332,32 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2 bg-neutral-900 border border-neutral-800 rounded-xl p-6 min-h-[280px] flex flex-col justify-between">
+              <div className="md:col-span-2 bg-neutral-950 border border-neutral-900 rounded-xl p-6 min-h-[280px] flex flex-col justify-between">
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-2">Approved Scope & Context</h3>
                   <p className="text-sm text-neutral-200">{objective || 'No objective statement defined.'}</p>
                 </div>
-                <div className="border-t border-neutral-800/80 pt-4 mt-6">
+                <div className="border-t border-neutral-900 pt-4 mt-6">
                   <span className="text-xs text-neutral-500 font-mono">Status: Council quorum met. Specialists executing...</span>
                 </div>
               </div>
 
-              <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 flex flex-col justify-between">
+              <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-6 flex flex-col justify-between">
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-4">Active Council & Crew</h3>
                   <div className="space-y-3">
-                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-900">
                       <span className="text-neutral-300">Ragz</span>
                       <span className="text-emerald-400 font-medium">The Known Stranger</span>
                     </div>
-                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-900">
                       <div>
                         <span className="text-neutral-300 block">Giselle</span>
                         <span className="text-[10px] text-neutral-500 block">The Architect Who Won't Stop Asking "Why?"</span>
                       </div>
                       <span className="text-emerald-400">{gizRole}</span>
                     </div>
-                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-900">
                       <div>
                         <span className="text-neutral-300 block">Maya</span>
                         <span className="text-[10px] text-neutral-500 block">The Builder Who Says "Ship It... After You Sleep."</span>
@@ -377,7 +384,7 @@ export default function Home() {
       </div>
 
       {/* Footer copyright */}
-      <footer className="max-w-4xl w-full mx-auto text-center text-sm text-neutral-400 border-t border-neutral-900/60 pt-4 space-y-1">
+      <footer className="max-w-4xl w-full mx-auto text-center text-sm text-neutral-400 border-t border-neutral-900 pt-4 space-y-1">
         <p>AIrGun OS &bull; Built for Autonomous Founder Execution</p>
         <p className="text-neutral-500 text-xs">Conceived by Ragz. Built with Giselle & Maya.</p>
       </footer>
