@@ -143,7 +143,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL WITH DYNAMIC ROLES */}
+        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL WITH PERMANENT ROLE */}
         {step === 'council' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
@@ -161,8 +161,8 @@ export default function Home() {
                   <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Founder</span>
                   <h3 className="font-semibold text-white text-sm mt-0.5">Ragz</h3>
                 </div>
-                <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md text-center">
-                  Mission Leader
+                <span className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md text-center font-medium">
+                  Idea Generator & Annoying Nose-Poker
                 </span>
               </div>
 
@@ -212,7 +212,7 @@ export default function Home() {
                 {chatLog.map((msg, idx) => (
                   <div key={idx} className={`flex flex-col space-y-1 ${msg.sender === 'Ragz' ? 'items-end' : 'items-start'}`}>
                     <span className="text-[10px] font-medium text-neutral-500">
-                      {msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
+                      {msg.sender === 'Ragz' ? 'Ragz (Idea Generator & Annoying Nose-Poker)' : msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
                     </span>
                     <div className={`p-3 rounded-xl text-sm max-w-[85%] ${
                       msg.sender === 'Ragz' 
@@ -330,6 +330,10 @@ export default function Home() {
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-4">Active Council & Crew</h3>
                   <div className="space-y-3">
+                    <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
+                      <span className="text-neutral-300">Ragz</span>
+                      <span className="text-emerald-400 text-right max-w-[120px] truncate">Idea Generator & Annoying Nose-Poker</span>
+                    </div>
                     <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
                       <span className="text-neutral-300">Giselle</span>
                       <span className="text-emerald-400">{gizRole}</span>
