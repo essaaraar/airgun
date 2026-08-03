@@ -1,4 +1,4 @@
-'use client';
+=='use client';
 
 import { useState } from 'react';
 
@@ -28,7 +28,6 @@ export default function Home() {
   const [missionName, setMissionName] = useState('');
   const [objective, setObjective] = useState('');
   
-  // Dynamic Hats / Mission Roles for Giselle and Maya
   const [gizRole, setGizRole] = useState('Chief Architect');
   const [mayaRole, setMayaRole] = useState('Lead Engineer');
 
@@ -70,14 +69,12 @@ export default function Home() {
   const [inputMessage, setInputMessage] = useState('');
   const [invitedSpecialists, setInvitedSpecialists] = useState<string[]>([]);
   
-  // Guest state
   const [guest, setGuest] = useState<Guest | null>(null);
   const [guestNameInput, setGuestNameInput] = useState('');
   const [guestEmailInput, setGuestEmailInput] = useState('');
   const [guestSpecialtyInput, setGuestSpecialtyInput] = useState('');
   const [showGuestModal, setShowGuestModal] = useState(false);
 
-  // Mission Vault state
   const [missionVaultItems, setMissionVaultItems] = useState<string[]>([
     'Initial Scope Definition Document',
     'Core Architecture Blueprint (Draft)'
@@ -142,7 +139,6 @@ export default function Home() {
     addTimelineEvent(`Human Guest Invited: ${newGuest.name} (${newGuest.specialty})`);
     setShowGuestModal(false);
     
-    // Add system notification to chat log
     setChatLog(prev => [
       ...prev,
       { 
@@ -186,6 +182,24 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-black text-neutral-100 flex flex-col justify-between p-8 font-sans selection:bg-neutral-800">
+      
+      {/* Global Custom Scrollbar Styles to Eliminate White Track */}
+      <style jsx global>{`
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #262626;
+          border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #404040;
+        }
+      `}</style>
       
       {/* Top Bar / Brand Identity */}
       <header className="max-w-4xl w-full mx-auto flex justify-between items-center border-b border-neutral-900 pb-4">
@@ -332,22 +346,22 @@ export default function Home() {
 
             </div>
 
-            {/* Unified Stream Chat Feed with Absolute + Relative Timestamps */}
-            <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
+            {/* Unified Stream Chat Feed with Framed & Padded Container */}
+            <div className="bg-black border border-neutral-800/80 rounded-2xl p-6 space-y-6 shadow-xl">
               
               <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
                 <span>Objective: <strong className="text-white">{objective}</strong></span>
                 <span className="text-neutral-500 font-mono">Flight Log Feed</span>
               </div>
 
-              {/* Continuous Left-Aligned Stream */}
-              <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
+              {/* Continuous Left-Aligned Stream with generous bottom spacing so text never clips */}
+              <div className="space-y-6 max-h-[340px] overflow-y-auto pr-2 pb-2">
                 {chatLog.map((msg, idx) => {
                   const isUser = msg.sender === 'Ragz';
                   const isSystem = msg.sender === 'System';
                   return (
                     <div key={idx} className="flex flex-col items-start w-full">
-                      <div className="flex items-center justify-between w-full mb-1 px-1">
+                      <div className="flex items-center justify-between w-full mb-1.5 px-1">
                         <div className="flex items-center gap-1.5">
                           <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : isSystem ? 'text-amber-400 font-mono text-[11px]' : 'text-white'}`}>
                             {msg.sender}
@@ -368,7 +382,7 @@ export default function Home() {
                 })}
               </div>
 
-              <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-900">
+              <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-800/80">
                 <input 
                   type="text"
                   placeholder="Message the council..."
@@ -465,22 +479,22 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              {/* Left Column: Continuous Chat Stream & Input (2 Columns Wide) */}
-              <div className="md:col-span-2 bg-black border border-neutral-900 rounded-2xl p-6 space-y-6 flex flex-col justify-between">
+              {/* Left Column: Continuous Chat Stream & Input with Clean Grey Frame */}
+              <div className="md:col-span-2 bg-black border border-neutral-800/80 rounded-2xl p-6 space-y-6 flex flex-col justify-between shadow-xl">
                 
                 <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
                   <span>Active Execution Stream</span>
                   <span className="text-emerald-400 font-mono">Live Room B Chat</span>
                 </div>
 
-                {/* Persistent Chat Log Feed */}
-                <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
+                {/* Persistent Chat Log Feed with safe bottom padding */}
+                <div className="space-y-6 max-h-[340px] overflow-y-auto pr-2 pb-2">
                   {chatLog.map((msg, idx) => {
                     const isUser = msg.sender === 'Ragz';
                     const isSystem = msg.sender === 'System';
                     return (
                       <div key={idx} className="flex flex-col items-start w-full">
-                        <div className="flex items-center justify-between w-full mb-1 px-1">
+                        <div className="flex items-center justify-between w-full mb-1.5 px-1">
                           <div className="flex items-center gap-1.5">
                             <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : isSystem ? 'text-amber-400 font-mono text-[11px]' : 'text-white'}`}>
                               {msg.sender}
@@ -502,7 +516,7 @@ export default function Home() {
                 </div>
 
                 {/* Room B Chat Input */}
-                <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-900">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-800/80">
                   <input 
                     type="text"
                     placeholder="Message the active room crew..."
