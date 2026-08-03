@@ -17,6 +17,12 @@ interface TimelineEvent {
   time: string;
 }
 
+interface Guest {
+  name: string;
+  email: string;
+  specialty: string;
+}
+
 export default function Home() {
   const [step, setStep] = useState<Step>('landing');
   const [missionName, setMissionName] = useState('');
@@ -64,6 +70,20 @@ export default function Home() {
   const [inputMessage, setInputMessage] = useState('');
   const [invitedSpecialists, setInvitedSpecialists] = useState<string[]>([]);
   
+  // Guest state
+  const [guest, setGuest] = useState<Guest | null>(null);
+  const [guestNameInput, setGuestNameInput] = useState('');
+  const [guestEmailInput, setGuestEmailInput] = useState('');
+  const [guestSpecialtyInput, setGuestSpecialtyInput] = useState('');
+  const [showGuestModal, setShowGuestModal] = useState(false);
+
+  // Mission Vault state
+  const [missionVaultItems, setMissionVaultItems] = useState<string[]>([
+    'Initial Scope Definition Document',
+    'Core Architecture Blueprint (Draft)'
+  ]);
+  const [newVaultItem, setNewVaultItem] = useState('');
+
   const availableSpecialists = [
     { name: 'Claude', role: 'Reviewer & Architect', icon: '🧠' },
     { name: 'NotebookLM', role: 'Research Officer', icon: '📚' },
@@ -108,6 +128,62 @@ export default function Home() {
     }
   };
 
+  const handleAddGuest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestNameInput.trim()) return;
+
+    const newGuest: Guest = {
+      name: guestNameInput,
+      email: guestEmailInput || 'no-email@provided.com',
+      specialty: guestSpecialtyInput || 'Human Advisor'
+    };
+
+    setGuest(newGuest);
+    addTimelineEvent(`Human Guest Invited: ${newGuest.name} (${newGuest.specialty})`);
+    setShowGuestModal(false);
+    
+    // Add system notification to chat log
+    setChatLog(prev => [
+      ...prev,
+      { 
+        sender: 'System', 
+        roleTag: 'Access Control', 
+        text: `${newGuest.name} has entered Room B for project "${missionName || 'Mission'}". Specialty: ${newGuest.specialty}.`, 
+        timestamp: getAbsoluteTime(), 
+        relativeTime: getRelativeTime() 
+      }
+    ]);
+
+    setGuestNameInput('');
+    setGuestEmailInput('');
+    setGuestSpecialtyInput('');
+  };
+
+  const handleKickGuest = () => {
+    if (!guest) return;
+    const kickedName = guest.name;
+    setGuest(null);
+    addTimelineEvent(`Human Guest Removed: ${kickedName} by Council Agreement`);
+    setChatLog(prev => [
+      ...prev,
+      { 
+        sender: 'System', 
+        roleTag: 'Access Control', 
+        text: `${kickedName} has been removed from Room B by consensus of the Core Council.`, 
+        timestamp: getAbsoluteTime(), 
+        relativeTime: getRelativeTime() 
+      }
+    ]);
+  };
+
+  const handleAddVaultItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVaultItem.trim()) return;
+    setMissionVaultItems([...missionVaultItems, newVaultItem]);
+    addTimelineEvent(`Artifact Added to Mission Vault: ${newVaultItem}`);
+    setNewVaultItem('');
+  };
+
   return (
     <main className="min-h-screen bg-black text-neutral-100 flex flex-col justify-between p-8 font-sans selection:bg-neutral-800">
       
@@ -147,7 +223,7 @@ export default function Home() {
 
             <div className="space-y-4 bg-neutral-900/40 border border-neutral-900 p-6 rounded-2xl">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Mission Name</label>
+                <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Mission Name (Project)</label>
                 <input 
                   type="text"
                   placeholder="e.g. Build LIPE"
@@ -268,11 +344,12 @@ export default function Home() {
               <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => {
                   const isUser = msg.sender === 'Ragz';
+                  const isSystem = msg.sender === 'System';
                   return (
                     <div key={idx} className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full mb-1 px-1">
                         <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
+                          <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : isSystem ? 'text-amber-400 font-mono text-[11px]' : 'text-white'}`}>
                             {msg.sender}
                           </span>
                           <span className="text-[10px] text-neutral-400">({msg.roleTag})</span>
@@ -370,18 +447,18 @@ export default function Home() {
               }}
               className="w-full bg-white text-black font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors"
             >
-              Enter Mission Room ({invitedSpecialists.length} Specialists Joined)
+              Enter Mission Room ({invitedSpecialists.length} Specialists Joined{guest ? ' + 1 Guest' : ''})
             </button>
           </div>
         )}
 
-        {/* STEP 4: MISSION ROOM WORKSPACE WITH PERSISTENT CHAT STREAM */}
+        {/* STEP 4: MISSION ROOM WORKSPACE WITH PERSISTENT CHAT STREAM, MISSION VAULT & GUEST CONTROLS */}
         {step === 'room' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
               <div>
-                <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Active Mission Room B &bull; Execution Phase</span>
-                <h2 className="text-2xl font-bold tracking-tight text-white mt-1">{missionName}</h2>
+                <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Active Mission Room B &bull; Project: {missionName}</span>
+                <h2 className="text-2xl font-bold tracking-tight text-white mt-1">{objective || missionName}</h2>
               </div>
               <span className="text-xs text-neutral-500 font-mono">Flight Recorder Logged</span>
             </div>
@@ -400,11 +477,12 @@ export default function Home() {
                 <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                   {chatLog.map((msg, idx) => {
                     const isUser = msg.sender === 'Ragz';
+                    const isSystem = msg.sender === 'System';
                     return (
                       <div key={idx} className="flex flex-col items-start w-full">
                         <div className="flex items-center justify-between w-full mb-1 px-1">
                           <div className="flex items-center gap-1.5">
-                            <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : 'text-white'}`}>
+                            <span className={`text-xs font-semibold ${isUser ? 'text-emerald-400' : isSystem ? 'text-amber-400 font-mono text-[11px]' : 'text-white'}`}>
                               {msg.sender}
                             </span>
                             <span className="text-[10px] text-neutral-400">({msg.roleTag})</span>
@@ -441,34 +519,23 @@ export default function Home() {
                 </form>
               </div>
 
-              {/* Right Column: Objective, Timeline Telemetry, and Active Crew (1 Column Wide) */}
+              {/* Right Column: Crew, Mission Vault, and Flight Recorder (1 Column Wide) */}
               <div className="space-y-4">
                 
-                {/* Approved Scope Card */}
-                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-2">Objective</h3>
-                  <p className="text-sm text-neutral-200">{objective || 'No objective statement defined.'}</p>
-                </div>
-
-                {/* Flight Recorder Timeline Drawer */}
-                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-3">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-emerald-400 flex items-center justify-between">
-                    <span>Flight Recorder</span>
-                    <span className="text-[10px] text-neutral-500 font-mono">Telemetry</span>
-                  </h3>
-                  <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
-                    {timelineEvents.map((ev, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs border-b border-neutral-900 pb-1.5">
-                        <span className="text-neutral-300 truncate max-w-[130px]">{ev.label}</span>
-                        <span className="font-mono text-neutral-500">{ev.time}</span>
-                      </div>
-                    ))}
+                {/* Active Council & Crew Panel with Guest Invite/Kick */}
+                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400">Crew in Room</h3>
+                    {!guest && (
+                      <button 
+                        onClick={() => setShowGuestModal(true)}
+                        className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md hover:bg-emerald-500/25 transition-colors font-medium"
+                      >
+                        + Invite Guest
+                      </button>
+                    )}
                   </div>
-                </div>
 
-                {/* Active Council & Crew Panel */}
-                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-3">Crew in Room</h3>
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-xs pb-2 border-b border-neutral-900">
                       <span className="text-neutral-300">Ragz</span>
@@ -482,8 +549,26 @@ export default function Home() {
                       <span className="text-neutral-300">Maya</span>
                       <span className="text-emerald-400 font-medium text-[10px]">{mayaRole}</span>
                     </div>
+
+                    {/* Guest Display if active */}
+                    {guest && (
+                      <div className="bg-neutral-900/80 border border-amber-500/30 p-2.5 rounded-lg space-y-1.5 my-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-amber-300 font-semibold">{guest.name}</span>
+                          <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">Human Guest</span>
+                        </div>
+                        <p className="text-[10px] text-neutral-400">Purpose: {guest.specialty}</p>
+                        <button 
+                          onClick={handleKickGuest}
+                          className="w-full mt-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 text-[10px] py-1 rounded transition-colors font-medium"
+                        >
+                          Kick Out Guest (Consensus)
+                        </button>
+                      </div>
+                    )}
+
                     {invitedSpecialists.length === 0 ? (
-                      <p className="text-xs text-neutral-500 italic pt-1">No specialists invited (Core Council only).</p>
+                      <p className="text-xs text-neutral-500 italic pt-1">No AI specialists invited.</p>
                     ) : (
                       invitedSpecialists.map((s, i) => (
                         <div key={i} className="flex items-center justify-between text-xs pt-1">
@@ -495,6 +580,50 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Mission Vault */}
+                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-3">
+                  <h3 className="text-xs font-medium uppercase tracking-wider text-emerald-400 flex items-center justify-between">
+                    <span>Mission Vault</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">Deliverables</span>
+                  </h3>
+                  <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
+                    {missionVaultItems.map((item, idx) => (
+                      <div key={idx} className="text-xs text-neutral-300 bg-neutral-900/60 border border-neutral-800/80 px-2.5 py-1.5 rounded-lg flex items-center gap-2">
+                        <span className="text-emerald-400 text-[10px]">📄</span>
+                        <span className="truncate">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <form onSubmit={handleAddVaultItem} className="flex gap-2 pt-1">
+                    <input 
+                      type="text"
+                      placeholder="Add deliverable..."
+                      value={newVaultItem}
+                      onChange={(e) => setNewVaultItem(e.target.value)}
+                      className="flex-1 bg-black border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600"
+                    />
+                    <button type="submit" className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors">
+                      +
+                    </button>
+                  </form>
+                </div>
+
+                {/* Flight Recorder Timeline Drawer */}
+                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-3">
+                  <h3 className="text-xs font-medium uppercase tracking-wider text-emerald-400 flex items-center justify-between">
+                    <span>Flight Recorder</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">Telemetry</span>
+                  </h3>
+                  <div className="space-y-2 max-h-[120px] overflow-y-auto pr-1">
+                    {timelineEvents.map((ev, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs border-b border-neutral-900 pb-1.5">
+                        <span className="text-neutral-300 truncate max-w-[130px]">{ev.label}</span>
+                        <span className="font-mono text-neutral-500">{ev.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
               </div>
 
             </div>
@@ -502,6 +631,69 @@ export default function Home() {
         )}
 
       </div>
+
+      {/* Guest Invitation Modal Overlay */}
+      {showGuestModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-neutral-950 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-neutral-900 pb-3">
+              <h3 className="font-bold text-white text-base">Invite Human Guest</h3>
+              <button onClick={() => setShowGuestModal(false)} className="text-neutral-400 hover:text-white text-sm">✕</button>
+            </div>
+            <p className="text-xs text-neutral-400">
+              Bring a human specialist into Room B for project <strong className="text-white">{missionName}</strong>. They will stay in this room until the council agrees to remove them.
+            </p>
+            <form onSubmit={handleAddGuest} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-medium text-neutral-400">Guest Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Alex Rivera"
+                  value={guestNameInput}
+                  onChange={(e) => setGuestNameInput(e.target.value)}
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-600"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-medium text-neutral-400">Email ID</label>
+                <input 
+                  type="email" 
+                  placeholder="alex@venture.co"
+                  value={guestEmailInput}
+                  onChange={(e) => setGuestEmailInput(e.target.value)}
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-600"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-medium text-neutral-400">Specialty / Project Purpose</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Legal & Term Sheet Review"
+                  value={guestSpecialtyInput}
+                  onChange={(e) => setGuestSpecialtyInput(e.target.value)}
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-600"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button"
+                  onClick={() => setShowGuestModal(false)}
+                  className="flex-1 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 font-medium py-2.5 rounded-xl text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 bg-white hover:bg-neutral-200 text-black font-semibold py-2.5 rounded-xl text-xs transition-colors"
+                >
+                  Bring Into Room B
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Footer copyright */}
       <footer className="max-w-4xl w-full mx-auto text-center text-sm text-neutral-400 border-t border-neutral-900 pt-4 space-y-1">
