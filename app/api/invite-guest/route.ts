@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
   try {
     const data = await resend.emails.send({
-      from: 'AIrGun OS <noreply@yourdomain.com>',
+      from: 'AIrGun OS <onboarding@resend.dev>',
       to: [email],
       subject: `[AIrGun OS] You have been invited to join Mission: ${missionName}`,
       html: `
