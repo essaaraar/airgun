@@ -9,6 +9,12 @@ interface ChatMessage {
   roleTag: string;
   text: string;
   timestamp: string;
+  relativeTime: string;
+}
+
+interface TimelineEvent {
+  label: string;
+  time: string;
 }
 
 export default function Home() {
@@ -32,17 +38,30 @@ export default function Home() {
     'General Advisor'
   ];
 
-  const getCurrentTime = () => {
+  const missionStartTime = useState(() => Date.now())[0];
+
+  const getAbsoluteTime = () => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   };
 
-  const [chatLog, setChatLog] = useState<ChatMessage[]>([
-    { sender: 'Maya', roleTag: 'Lead Engineer', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.', timestamp: '12:00:01' },
-    { sender: 'Giselle', roleTag: 'Chief Architect', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?', timestamp: '12:00:04' }
+  const getRelativeTime = () => {
+    const diffSeconds = Math.floor((Date.now() - missionStartTime) / 1000);
+    const mins = Math.floor(diffSeconds / 60);
+    const secs = diffSeconds % 60;
+    return `+${mins > 0 ? `${mins}m ` : ''}${secs}s`;
+  };
+
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([
+    { label: 'Mission Initialized', time: getAbsoluteTime() }
   ]);
-  const [inputMessage, setInputMessage] = useState('');
+
+  const [chatLog, setChatLog] = useState<ChatMessage[]>([
+    { sender: 'Maya', roleTag: 'Lead Engineer', text: 'Council assembled. Let’s break down the scope for this mission before inviting any external nodes.', timestamp: getAbsoluteTime(), relativeTime: getRelativeTime() },
+    { sender: 'Giselle', roleTag: 'Chief Architect', text: 'Agreed. Ragz, what is the core bottleneck we are trying to clear with this objective?', timestamp: getAbsoluteTime(), relativeTime: getRelativeTime() }
+  ]);
   
+  const [inputMessage, setInputMessage] = useState('');
   const [invitedSpecialists, setInvitedSpecialists] = useState<string[]>([]);
   
   const availableSpecialists = [
@@ -53,18 +72,29 @@ export default function Home() {
     { name: 'Figma AI', role: 'Interface Designer', icon: '🎨' },
   ];
 
+  const addTimelineEvent = (label: string) => {
+    setTimelineEvents(prev => [...prev, { label, time: getAbsoluteTime() }]);
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    const newLog = [...chatLog, { sender: 'Ragz', roleTag: 'The Known Stranger', text: inputMessage, timestamp: getCurrentTime() }];
-    setChatLog(newLog);
+    const userMsgTime = getAbsoluteTime();
+    const userRelTime = getRelativeTime();
+
+    setChatLog(prev => [
+      ...prev, 
+      { sender: 'Ragz', roleTag: 'The Known Stranger', text: inputMessage, timestamp: userMsgTime, relativeTime: userRelTime }
+    ]);
     setInputMessage('');
 
     setTimeout(() => {
+      const mayaMsgTime = getAbsoluteTime();
+      const mayaRelTime = getRelativeTime();
       setChatLog((prev) => [
         ...prev,
-        { sender: 'Maya', roleTag: mayaRole, text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.`, timestamp: getCurrentTime() }
+        { sender: 'Maya', roleTag: mayaRole, text: `Noted. Keeping scope tight around: "${objective}". Once we finish aligning, we can approve the plan.`, timestamp: mayaMsgTime, relativeTime: mayaRelTime }
       ]);
     }, 800);
   };
@@ -74,6 +104,7 @@ export default function Home() {
       setInvitedSpecialists(invitedSpecialists.filter(s => s !== name));
     } else {
       setInvitedSpecialists([...invitedSpecialists, name]);
+      addTimelineEvent(`${name} Joined Mission Room`);
     }
   };
 
@@ -87,11 +118,11 @@ export default function Home() {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             AIrGun
           </h1>
-          <p className="text-xs text-neutral-500">Personal Founder's Operating System</p>
+          <p className="text-xs text-neutral-500">Personal Founder's Operating System &bull; Flight Recorder Enabled</p>
         </div>
         {step !== 'landing' && (
           <button 
-            onClick={() => setStep('landing')}
+            onClick={() => { setStep('landing'); }}
             className="text-xs text-neutral-400 hover:text-white transition-colors border border-neutral-800 px-3 py-1.5 rounded-lg bg-neutral-900"
           >
             ← Reset Mission
@@ -138,7 +169,10 @@ export default function Home() {
               </div>
 
               <button 
-                onClick={() => setStep('council')}
+                onClick={() => {
+                  setStep('council');
+                  addTimelineEvent('Council Assembled (Room A)');
+                }}
                 disabled={!missionName.trim()}
                 className="w-full mt-2 bg-white text-black font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -163,7 +197,7 @@ export default function Home() {
                 <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Room A &bull; Founder's Council</span>
                 <h2 className="text-2xl font-bold tracking-tight text-white mt-1">{missionName}</h2>
               </div>
-              <span className="text-xs text-neutral-500 font-mono">Scope & Hat Assignment</span>
+              <span className="text-xs text-neutral-500 font-mono">Flight Recorder Active</span>
             </div>
 
             {/* Permanent Identities & Hats Panel */}
@@ -222,16 +256,15 @@ export default function Home() {
 
             </div>
 
-            {/* Clean Unified Stream Chat Feed with Visible Timestamps */}
+            {/* Unified Stream Chat Feed with Absolute + Relative Timestamps */}
             <div className="bg-black border border-neutral-900 rounded-2xl p-6 space-y-6">
               
-              {/* Mission Objective subtle badge */}
               <div className="bg-neutral-950 border border-neutral-900 px-4 py-3 rounded-xl flex items-center justify-between text-xs text-neutral-400">
                 <span>Objective: <strong className="text-white">{objective}</strong></span>
-                <span className="text-neutral-500 font-mono">Execution Feed</span>
+                <span className="text-neutral-500 font-mono">Flight Log Feed</span>
               </div>
 
-              {/* Continuous Left-Aligned Message Stream */}
+              {/* Continuous Left-Aligned Stream */}
               <div className="space-y-5 max-h-[340px] overflow-y-auto pr-2">
                 {chatLog.map((msg, idx) => {
                   const isUser = msg.sender === 'Ragz';
@@ -244,9 +277,10 @@ export default function Home() {
                           </span>
                           <span className="text-[10px] text-neutral-400">({msg.roleTag})</span>
                         </div>
-                        {/* High-contrast Timestamp Badge */}
-                        <span className="text-[11px] font-mono text-neutral-300 bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded-md">
-                          ⏱ {msg.timestamp}
+                        {/* Absolute + Relative Time Pill */}
+                        <span className="text-[11px] font-mono text-neutral-300 bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded-md flex items-center gap-1.5">
+                          <span>{msg.timestamp}</span>
+                          <span className="text-emerald-400 font-medium">({msg.relativeTime})</span>
                         </span>
                       </div>
                       <div className="text-sm text-neutral-300 text-left pl-1 leading-relaxed w-full">
@@ -257,7 +291,6 @@ export default function Home() {
                 })}
               </div>
 
-              {/* Clean Inline Chat Input */}
               <form onSubmit={handleSendMessage} className="flex items-center gap-3 pt-4 border-t border-neutral-900">
                 <input 
                   type="text"
@@ -277,7 +310,10 @@ export default function Home() {
 
             {/* Scope Gate Approval */}
             <button 
-              onClick={() => setStep('invite')}
+              onClick={() => {
+                setStep('invite');
+                addTimelineEvent('Mission Plan Approved by Founder');
+              }}
               className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 px-4 rounded-xl text-base transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
             >
               <span>Approve Mission Plan</span>
@@ -328,7 +364,10 @@ export default function Home() {
             </div>
 
             <button 
-              onClick={() => setStep('room')}
+              onClick={() => {
+                setStep('room');
+                addTimelineEvent('Entered Mission Execution Room');
+              }}
               className="w-full bg-white text-black font-semibold py-3.5 px-4 rounded-xl text-base hover:bg-neutral-200 transition-colors"
             >
               Enter Mission Room ({invitedSpecialists.length} Specialists Joined)
@@ -336,7 +375,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* STEP 4: MISSION ROOM WORKSPACE */}
+        {/* STEP 4: MISSION ROOM WORKSPACE WITH FLIGHT RECORDER TELEMETRY */}
         {step === 'room' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
@@ -344,20 +383,35 @@ export default function Home() {
                 <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Active Mission Room &bull; Execution Phase</span>
                 <h2 className="text-2xl font-bold tracking-tight text-white mt-1">{missionName}</h2>
               </div>
-              <span className="text-xs text-neutral-500 font-mono">ID: AIRGUN-001</span>
+              <span className="text-xs text-neutral-500 font-mono">Flight Recorder Logged</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2 bg-neutral-950 border border-neutral-900 rounded-xl p-6 min-h-[280px] flex flex-col justify-between">
-                <div>
+              {/* Objective & Telemetry */}
+              <div className="md:col-span-2 space-y-4">
+                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-6">
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-2">Approved Scope & Context</h3>
                   <p className="text-sm text-neutral-200">{objective || 'No objective statement defined.'}</p>
                 </div>
-                <div className="border-t border-neutral-900 pt-4 mt-6">
-                  <span className="text-xs text-neutral-500 font-mono">Status: Council quorum met. Specialists executing...</span>
+
+                {/* Flight Recorder Timeline Drawer */}
+                <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-6 space-y-3">
+                  <h3 className="text-xs font-medium uppercase tracking-wider text-emerald-400 flex items-center justify-between">
+                    <span>Flight Recorder Timeline</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">Live Telemetry</span>
+                  </h3>
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                    {timelineEvents.map((ev, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs border-b border-neutral-900 pb-1.5">
+                        <span className="text-neutral-300">{ev.label}</span>
+                        <span className="font-mono text-neutral-500">{ev.time}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
+              {/* Crew Panel */}
               <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-6 flex flex-col justify-between">
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400 mb-4">Active Council & Crew</h3>
