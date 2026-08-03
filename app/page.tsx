@@ -9,7 +9,7 @@ export default function Home() {
   const [missionName, setMissionName] = useState('');
   const [objective, setObjective] = useState('');
   
-  // Dynamic Roles for the Core Trio
+  // Dynamic Hats / Mission Roles for Giselle and Maya
   const [gizRole, setGizRole] = useState('Chief Architect');
   const [mayaRole, setMayaRole] = useState('Lead Engineer');
 
@@ -143,7 +143,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL WITH PERMANENT ROLE */}
+        {/* STEP 2: ROOM A - THE FOUNDER'S COUNCIL */}
         {step === 'council' && (
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-end border-b border-neutral-900 pb-4">
@@ -154,23 +154,28 @@ export default function Home() {
               <span className="text-xs text-neutral-500 font-mono">Scope & Hat Assignment</span>
             </div>
 
-            {/* Dynamic Role Assignment Panel */}
+            {/* Permanent Identities & Hats Panel */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-neutral-900/40 border border-neutral-800/80 p-5 rounded-2xl">
+              
+              {/* Ragz */}
               <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 flex flex-col justify-between space-y-2">
                 <div>
                   <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Founder</span>
                   <h3 className="font-semibold text-white text-sm mt-0.5">Ragz</h3>
                 </div>
                 <span className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md text-center font-medium">
-                  Idea Generator & Annoying Nose-Poker
+                  The Known Stranger
                 </span>
               </div>
 
+              {/* Giselle */}
               <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
-                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Crew Member</span>
-                <h3 className="font-semibold text-white text-sm">Giselle</h3>
+                <div>
+                  <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">The Architect Who Won't Stop Asking "Why?"</span>
+                  <h3 className="font-semibold text-white text-sm mt-0.5">Giselle</h3>
+                </div>
                 <div className="pt-1">
-                  <label className="text-[10px] text-neutral-400 block mb-1">Assign Hat / Role:</label>
+                  <label className="text-[10px] text-neutral-400 block mb-1">Mission Hat / Specialty:</label>
                   <select 
                     value={gizRole}
                     onChange={(e) => setGizRole(e.target.value)}
@@ -183,11 +188,14 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Maya */}
               <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2">
-                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Crew Member</span>
-                <h3 className="font-semibold text-white text-sm">Maya</h3>
+                <div>
+                  <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">The Builder Who Says "Ship It... After You Sleep."</span>
+                  <h3 className="font-semibold text-white text-sm mt-0.5">Maya</h3>
+                </div>
                 <div className="pt-1">
-                  <label className="text-[10px] text-neutral-400 block mb-1">Assign Hat / Role:</label>
+                  <label className="text-[10px] text-neutral-400 block mb-1">Mission Hat / Specialty:</label>
                   <select 
                     value={mayaRole}
                     onChange={(e) => setMayaRole(e.target.value)}
@@ -199,6 +207,7 @@ export default function Home() {
                   </select>
                 </div>
               </div>
+
             </div>
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
@@ -212,7 +221,7 @@ export default function Home() {
                 {chatLog.map((msg, idx) => (
                   <div key={idx} className={`flex flex-col space-y-1 ${msg.sender === 'Ragz' ? 'items-end' : 'items-start'}`}>
                     <span className="text-[10px] font-medium text-neutral-500">
-                      {msg.sender === 'Ragz' ? 'Ragz (Idea Generator & Annoying Nose-Poker)' : msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
+                      {msg.sender === 'Ragz' ? 'Ragz (The Known Stranger)' : msg.sender === 'Giselle' ? `Giselle (${gizRole})` : msg.sender === 'Maya' ? `Maya (${mayaRole})` : msg.sender}
                     </span>
                     <div className={`p-3 rounded-xl text-sm max-w-[85%] ${
                       msg.sender === 'Ragz' 
@@ -332,14 +341,20 @@ export default function Home() {
                   <div className="space-y-3">
                     <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
                       <span className="text-neutral-300">Ragz</span>
-                      <span className="text-emerald-400 text-right max-w-[120px] truncate">Idea Generator & Annoying Nose-Poker</span>
+                      <span className="text-emerald-400 font-medium">The Known Stranger</span>
                     </div>
                     <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
-                      <span className="text-neutral-300">Giselle</span>
+                      <div>
+                        <span className="text-neutral-300 block">Giselle</span>
+                        <span className="text-[10px] text-neutral-500 block">The Architect Who Won't Stop Asking "Why?"</span>
+                      </div>
                       <span className="text-emerald-400">{gizRole}</span>
                     </div>
                     <div className="flex items-between justify-between text-xs pb-2 border-b border-neutral-800/60">
-                      <span className="text-neutral-300">Maya</span>
+                      <div>
+                        <span className="text-neutral-300 block">Maya</span>
+                        <span className="text-[10px] text-neutral-500 block">The Builder Who Says "Ship It... After You Sleep."</span>
+                      </div>
                       <span className="text-emerald-400">{mayaRole}</span>
                     </div>
                     {invitedSpecialists.length === 0 ? (
